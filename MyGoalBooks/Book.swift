@@ -10,13 +10,14 @@ import Foundation
 import UIKit
 
 class Book {
+    var ID: Int = 0
     var Name:String = ""
     var Pages: Int = 0
     var PagesRead: Int = 0
     var PercentageRead: Double = 0.0
     var DateBegin: NSDate?
     var DateEnd: NSDate?
-    
+
     var DataBasePath = NSString()
     
     init(name: String, pages: Int)
@@ -60,17 +61,13 @@ class Book {
             }
             
             if booksDB.open() {
-                let createTableBooks = "CREATE TABLE IF NOT EXISTS BOOKS(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, PAGES INTEGER, PAGESREAD INTEGER DEFAULT 0, PORCENTAGEMREAD REAL DEFAULT 0, DATEBEGIN TEXT NULL, DATEEND TEXT NULL)"
+                let createTableBooks = "CREATE TABLE IF NOT EXISTS BOOKS(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, PAGES INTEGER, PAGESREAD INTEGER DEFAULT 0, PERCENTAGEREAD REAL DEFAULT 0, DATEBEGIN TEXT NULL, DATEEND TEXT NULL)"
                 
                 if !booksDB.executeStatements(createTableBooks) {
                     print("Error: \(booksDB.lastErrorMessage())")
                 }
                 
-                let insertItem = "INSERT INTO BOOKS(NAME, PAGES) values ('Fast and Slow',10)"
-                if !booksDB.executeStatements(insertItem) {
-                    print("Error: \(booksDB.lastErrorMessage())")
-                }
-                booksDB.close()
+                    booksDB.close()
             }
         }
     }
@@ -88,21 +85,41 @@ class Book {
             while resultDB?.next() == true {
                 let name = resultDB?.stringForColumn("NAME")!
                 let pages = resultDB?.intForColumn("PAGES")
-                result.append(Book(name: name!, pages: Int(pages!) ))
+                let pagesRead = resultDB?.intForColumn("PAGESREAD")
+                let bookID = resultDB?.intForColumn("ID")
+                let percentageRead = resultDB?.doubleForColumn("PERCENTAGEREAD")
+                
+                let book = Book()
+                book.Name = name!
+                book.Pages = Int(pages!)
+                book.PagesRead = Int(pagesRead!)
+                book.ID = Int(bookID!)
+                book.PercentageRead = percentageRead!
+                
+                result.append(book)
             }
         }
         
         return result
     }
     
-    func insert(book: Book) -> Bool
+    func InsertOrUpdate(book: Book) -> Bool
     {
+        book.setPercentageRead()
+        
         let booksDB = FMDatabase(path: DataBasePath as String)
         
+        var sqlInsertUpdate: String = ""
+        
         if booksDB.open() {
-            let insertItem = "INSERT INTO BOOKS(NAME, PAGES, PAGESREAD, PORCENTAGEMREAD) values ('\(book.Name)',\(book.Pages), \(book.PagesRead), \(book.PercentageRead))"
+            if book.ID == 0 {
+                sqlInsertUpdate = "INSERT INTO BOOKS(NAME, PAGES, PAGESREAD, PERCENTAGEREAD) values ('\(book.Name)',\(book.Pages), \(book.PagesRead), \(book.PercentageRead))"
+            }else
+            {
+                sqlInsertUpdate = "UPDATE BOOKS SET PAGESREAD = \(book.PagesRead), PERCENTAGEREAD = \(book.PercentageRead) WHERE ID = \(book.ID) "
+            }
             
-            if !booksDB.executeStatements(insertItem) {
+            if !booksDB.executeStatements(sqlInsertUpdate) {
                 print("Error: \(booksDB.lastErrorMessage())")
                 return false
             }
@@ -111,10 +128,14 @@ class Book {
         return true
     }
     
-    func getPercentageRead() -> Double?
+    private func setPercentageRead()
     {
-        self.PercentageRead = Double((self.PagesRead * 100) / self.Pages)
-        return self.PercentageRead
+        if self.PercentageRead == 0 {
+            self.PercentageRead = Double((self.PagesRead * 100) / self.Pages)
+        }else
+        {
+            self.PagesRead = 0
+        }
     }
 }
 

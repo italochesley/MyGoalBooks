@@ -10,6 +10,31 @@ import UIKit
 
 class BookViewController: UIViewController, UINavigationControllerDelegate {
 
+    override func viewDidLoad() {
+        if let selectedBook = book {
+            nameTextField.text = selectedBook.Name
+            pagesTextBook.text = String(selectedBook.Pages)
+            
+            if selectedBook.PagesRead == 0 {
+                pagesReadTextField.text = String(selectedBook.PercentageRead)
+                percentagePagesSegmenteControle.selectedSegmentIndex = 1
+            }
+            else
+            {
+                pagesReadTextField.text = String(selectedBook.PagesRead)
+                percentagePagesSegmenteControle.selectedSegmentIndex = 0
+            }
+            
+            pagesReadTextField.becomeFirstResponder()
+        }else
+        {
+            nameTextField.becomeFirstResponder()
+        }
+    }
+    // MARK: Variaveis
+    var book: Book?
+    
+    // MARK: OutLets
     @IBOutlet weak var saveButton: UIBarButtonItem!
     @IBOutlet weak var percentagePagesRead: UILabel!
     @IBOutlet weak var nameTextField: UITextField!
@@ -26,6 +51,7 @@ class BookViewController: UIViewController, UINavigationControllerDelegate {
         }
     }
     
+    @IBOutlet weak var percentagePagesSegmenteControle: UISegmentedControl!
     @IBAction func cancelAddBook(sender: UIBarButtonItem) {
         let isPresentingInAddBookMode = presentingViewController is UINavigationController
         
@@ -37,37 +63,26 @@ class BookViewController: UIViewController, UINavigationControllerDelegate {
         }
     }
     
-    @IBOutlet weak var savePercentagePageSwitch: UISwitch!
-    
-    @IBAction func informPercentageSwitch(sender: UISwitch) {
-        if sender.on {
-            percentagePagesRead.text = "Percentage Read"
-        }else
-        {
-            percentagePagesRead.text = "Pages Read"
-        }
-        
-        pagesReadTextField.becomeFirstResponder()
-    }
-    
-    var book: Book = Book()
-    
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if saveButton === sender
         {
             let newBook =  Book()
+            if book != nil {
+                newBook.ID = (book?.ID)!
+            }
+            
             newBook.Name = nameTextField.text ?? ""
             newBook.Pages = Int(pagesTextBook.text!)!
             
-            if savePercentagePageSwitch.on {
+            if percentagePagesSegmenteControle.selectedSegmentIndex == 1 {
                 newBook.PercentageRead = Double(pagesReadTextField.text!)!
             }else
             {
                newBook.PagesRead = Int(pagesReadTextField.text!)!
             }
             
-            book.insert(newBook)
             book = newBook
+            book?.InsertOrUpdate(newBook)
         }
     }
     

@@ -35,11 +35,25 @@ class BookTableViewController: UIViewController, UITableViewDataSource {
         let pages: String = String(allBooks[indexPath.row].Pages)
         cell.bookName.text =  "\(allBooks[indexPath.row].Name)(\(pages) pages)"
         
-        if let pagesRead = allBooks[indexPath.row].getPercentageRead() {
-            cell.bookPagesRead.text = "\(pagesRead)%"
-        }
+        cell.bookPagesRead.text = "\(allBooks[indexPath.row].PercentageRead)%"
         
         return cell
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "ShowDetail" {
+            let bookDetailViewIdentifier = segue.destinationViewController as! BookViewController
+            
+            if let selectedBook = sender as? BooksTableViewCell {
+                let indexPath = booksTableView.indexPathForCell(selectedBook)!
+                let selectedBook = allBooks[indexPath.row]
+                bookDetailViewIdentifier.book = selectedBook
+            }
+            
+        }else if segue.identifier == "AddItem"
+        {
+            
+        }
     }
     
     @IBAction func unwideToBookList(sender: UIStoryboardSegue)
@@ -47,12 +61,17 @@ class BookTableViewController: UIViewController, UITableViewDataSource {
             if let sourceViewController = sender.sourceViewController as? BookViewController
             {
                 let book = sourceViewController.book
+                
+                if let selectedIndexPath = booksTableView.indexPathForSelectedRow {
+                    allBooks[selectedIndexPath.row] = book!
+                    booksTableView.reloadRowsAtIndexPaths([selectedIndexPath], withRowAnimation: .Fade)
+                }else{
                 let newIndexPath = NSIndexPath(forRow: allBooks.count, inSection: 0)
-                allBooks.append(book)
-                booksTableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Bottom)
+                allBooks.append(book!)
+                    booksTableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Bottom)}
             }
         
         }
-
+    
 }
 
