@@ -8,15 +8,16 @@
 
 import UIKit
 
-class BookTableViewController: UIViewController, UITableViewDataSource {
+class BookTableViewController: UITableViewController {
 
     
-    @IBOutlet weak var booksTableView: UITableView!
     var allBooks: [Book] = []
     override func viewDidLoad() {
         super.viewDidLoad()
-        let book = Book(name: "", pages: 0)
+        navigationItem.leftBarButtonItem = editButtonItem()
+        let book = Book()
         allBooks = book.getAll()
+        
         // Do any additional setup after loading the view, typically from a nib.
     }
 
@@ -25,19 +26,50 @@ class BookTableViewController: UIViewController, UITableViewDataSource {
         // Dispose of any resources that can be recreated.
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return allBooks.count
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("BooksTableViewCell", forIndexPath: indexPath) as! BooksTableViewCell
         
         let pages: String = String(allBooks[indexPath.row].Pages)
-        cell.bookName.text =  "\(allBooks[indexPath.row].Name)(\(pages) pages)"
+        let pagesRead: String = String(allBooks[indexPath.row].PagesRead)
+        cell.bookName.text =  "\(allBooks[indexPath.row].Name)"
         
-        cell.bookPagesRead.text = "\(allBooks[indexPath.row].PercentageRead)%"
+        cell.bookPagesRead.text = "\(Int(allBooks[indexPath.row].PercentageRead))% (\(pagesRead) of \(pages))"
+        
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateStyle = .MediumStyle
+        
+        let averageForFinish: Int = allBooks[indexPath.row].getPagesToFinish(Int(pages)!, PagesRead: Int(pagesRead)!, FinishDate: allBooks[indexPath.row].DateEnd)
+        
+        var averages = "\(allBooks[indexPath.row].Average) pages"
+        
+        if averageForFinish > allBooks[indexPath.row].Average {
+            averages = averages + " (you are late!)"
+        }else if averageForFinish <  allBooks[indexPath.row].Average{
+            averages = averages + " (you are ok!)"
+        }
+        
+        
+        if averageForFinish > allBooks[indexPath.row].Average {
+            cell.averageaDay.textColor = UIColor.redColor()
+        }else if averageForFinish > allBooks[indexPath.row].Average {
+            cell.averageaDay.textColor = UIColor.blueColor()
+        }
+        
+        cell.averageaDay.text = averages
+        
+        if let finishDate =  allBooks[indexPath.row].DateEnd {
+            cell.finishDate.text = "Due Date: \(dateFormatter.stringFromDate(finishDate))"
+        }
         
         return cell
+    }
+    
+    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        return true
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -45,7 +77,7 @@ class BookTableViewController: UIViewController, UITableViewDataSource {
             let bookDetailViewIdentifier = segue.destinationViewController as! BookViewController
             
             if let selectedBook = sender as? BooksTableViewCell {
-                let indexPath = booksTableView.indexPathForCell(selectedBook)!
+                let indexPath = tableView.indexPathForCell(selectedBook)!
                 let selectedBook = allBooks[indexPath.row]
                 bookDetailViewIdentifier.book = selectedBook
             }
@@ -56,20 +88,37 @@ class BookTableViewController: UIViewController, UITableViewDataSource {
         }
     }
     
+    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        if editingStyle == .Delete {
+            //deletar da base
+            let idBookDelete = allBooks[indexPath.row].ID
+            let book = Book()
+            book.delete(idBookDelete)
+            //deletar da lista
+            allBooks.removeAtIndex(indexPath.row)
+            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+        }else if editingStyle == .Insert
+        {}
+    }
+    
     @IBAction func unwideToBookList(sender: UIStoryboardSegue)
         {
             if let sourceViewController = sender.sourceViewController as? BookViewController
             {
                 let book = sourceViewController.book
                 
-                if let selectedIndexPath = booksTableView.indexPathForSelectedRow {
+                if let selectedIndexPath = tableView.indexPathForSelectedRow {
                     allBooks[selectedIndexPath.row] = book!
-                    booksTableView.reloadRowsAtIndexPaths([selectedIndexPath], withRowAnimation: .Fade)
+                    tableView.reloadRowsAtIndexPaths([selectedIndexPath], withRowAnimation: .Fade)
+                    tableView.deselectRowAtIndexPath(selectedIndexPath, animated: true)
                 }else{
                 let newIndexPath = NSIndexPath(forRow: allBooks.count, inSection: 0)
                 allBooks.append(book!)
-                    booksTableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Bottom)}
+                    tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Bottom)
+                    tableView.deselectRowAtIndexPath(newIndexPath, animated: true)
+                }
             }
+            
         
         }
     

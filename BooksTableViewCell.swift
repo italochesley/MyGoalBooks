@@ -11,6 +11,7 @@ import UIKit
 class BooksTableViewCell: UITableViewCell {
     
     @IBOutlet weak var bookName: UILabel!
-    @IBOutlet weak var bookPages: UILabel!
     @IBOutlet weak var bookPagesRead: UILabel!
+    @IBOutlet weak var averageaDay: UILabel!
+    @IBOutlet weak var finishDate: UILabel!
 }

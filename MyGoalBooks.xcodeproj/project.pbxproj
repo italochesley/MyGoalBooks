@@ -21,6 +21,7 @@
 		8581798E1D1B1D9200F01397 /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 858179871D1B1D9200F01397 /* FMDatabaseQueue.m */; };
 		8581798F1D1B1D9200F01397 /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 858179891D1B1D9200F01397 /* FMDatabaseAdditions.m */; };
 		858179901D1B1D9200F01397 /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 8581798B1D1B1D9200F01397 /* FMDatabasePool.m */; };
+		85ED73681D3680E5003D95B6 /* BookRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85ED73671D3680E5003D95B6 /* BookRepository.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,6 +48,7 @@
 		858179891D1B1D9200F01397 /* FMDatabaseAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseAdditions.m; sourceTree = "<group>"; };
 		8581798A1D1B1D9200F01397 /* FMDatabasePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabasePool.h; sourceTree = "<group>"; };
 		8581798B1D1B1D9200F01397 /* FMDatabasePool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabasePool.m; sourceTree = "<group>"; };
+		85ED73671D3680E5003D95B6 /* BookRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookRepository.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,16 +83,16 @@
 		8581796C1D1B1D4E00F01397 /* MyGoalBooks */ = {
 			isa = PBXGroup;
 			children = (
+				85ED73661D367F64003D95B6 /* Controllers */,
+				85ED73651D367F47003D95B6 /* Entities */,
+				85ED73641D367F3C003D95B6 /* Repository */,
 				8581797F1D1B1D5700F01397 /* DataBase */,
 				8581796D1D1B1D4E00F01397 /* AppDelegate.swift */,
-				8581796F1D1B1D4E00F01397 /* BookTableViewController.swift */,
 				858179711D1B1D4E00F01397 /* Main.storyboard */,
 				858179741D1B1D4E00F01397 /* Assets.xcassets */,
 				858179761D1B1D4E00F01397 /* LaunchScreen.storyboard */,
 				858179791D1B1D4E00F01397 /* Info.plist */,
-				8575E4E81D1C18E500F27B16 /* Book.swift */,
 				8575E4EC1D1C200C00F27B16 /* BooksTableViewCell.swift */,
-				8575E4EE1D1C677A00F27B16 /* BookViewController.swift */,
 			);
 			path = MyGoalBooks;
 			sourceTree = "<group>";
@@ -112,6 +114,31 @@
 				858179801D1B1D9100F01397 /* MyGoalBooks-Bridging-Header.h */,
 			);
 			name = DataBase;
+			sourceTree = "<group>";
+		};
+		85ED73641D367F3C003D95B6 /* Repository */ = {
+			isa = PBXGroup;
+			children = (
+				85ED73671D3680E5003D95B6 /* BookRepository.swift */,
+			);
+			name = Repository;
+			sourceTree = "<group>";
+		};
+		85ED73651D367F47003D95B6 /* Entities */ = {
+			isa = PBXGroup;
+			children = (
+				8575E4E81D1C18E500F27B16 /* Book.swift */,
+			);
+			name = Entities;
+			sourceTree = "<group>";
+		};
+		85ED73661D367F64003D95B6 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				8575E4EE1D1C677A00F27B16 /* BookViewController.swift */,
+				8581796F1D1B1D4E00F01397 /* BookTableViewController.swift */,
+			);
+			name = Controllers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -195,6 +222,7 @@
 				8581798D1D1B1D9200F01397 /* FMResultSet.m in Sources */,
 				858179901D1B1D9200F01397 /* FMDatabasePool.m in Sources */,
 				8581796E1D1B1D4E00F01397 /* AppDelegate.swift in Sources */,
+				85ED73681D3680E5003D95B6 /* BookRepository.swift in Sources */,
 				8581798F1D1B1D9200F01397 /* FMDatabaseAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
